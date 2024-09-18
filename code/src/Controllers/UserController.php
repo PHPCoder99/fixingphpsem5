@@ -29,4 +29,24 @@ class UserController {
                 ]);
         }
     }
+
+    public function actionSave(string $name = null, string $birthday = null) {
+        if(User::validateGet()) {
+            $user = new User($name);
+            $user->setBirthdayFromString($birthday);
+            $user->addToFile();
+
+            $render = new Render();
+
+            return $render->renderPage(
+                'user-created.tpl', 
+                [
+                    'title' => 'Пользователь создан',
+                    'message' => "Создан пользователь " . $name
+                ]);
+        }
+        else {
+            throw new \Exception("Переданные данные некорректны");
+        }
+    }
 }

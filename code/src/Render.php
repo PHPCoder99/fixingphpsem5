@@ -11,7 +11,6 @@ class Render {
     private FilesystemLoader $loader;
     private Environment $environment;
 
-
     public function __construct(){
         $this->loader = new FilesystemLoader($_SERVER['DOCUMENT_ROOT'] . $this->viewFolder);
         $this->environment = new Environment($this->loader, [
@@ -19,11 +18,20 @@ class Render {
         ]);
     }
 
-    public function renderPage(string $contentTemplateName = 'page-index.tpl', array $templateVariables = []) {
+    public function renderPage(string $contentTemplateName = 'page-index.tpl', array $templateVariables = [], bool $is404 = false) {
+        if ($is404) {
+            http_response_code(404);
+            $contentTemplateName = '404.tpl';
+        }
+
         $template = $this->environment->load('main.tpl');
-        
-        $templateVariables['content_template_name'] = $contentTemplateName;
- 
+
+        $templateVariables['content_template_variable'] = $contentTemplateName;
+
+        date_default_timezone_set("Asia/Bangkok");
+
+        $dateTime = new \DateTime('now');
+
         return $template->render($templateVariables);
     }
 }

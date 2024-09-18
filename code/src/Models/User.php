@@ -58,4 +58,28 @@ class User {
             return false;
         }
     }
+
+    public static function validateGet(): bool{
+        if(
+            isset($_GET['name']) && !empty($_GET['name']) &&
+            isset($_GET['birthday']) && !empty($_GET['birthday'])
+        ){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public function addToFile(): void{
+        $address = $_SERVER['DOCUMENT_ROOT'] . User::$storageAddress;
+
+        if (file_exists($address) && is_writable($address)) {
+            $file = fopen($address, "a");
+            
+            fwrite($file, $this->userName . ", " . date("d-m-Y", $this->userBirthday)) . "\n";
+
+            fclose($file);
+        }
+    }
 }

@@ -10,7 +10,7 @@ class Application {
     private string $methodName;
 
     public function run() : string {
-        $routeArray = explode('/', $_SERVER['REQUEST_URI']);
+        $routeArray = explode('/', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 
         if(isset($routeArray[1]) && $routeArray[1] != '') {
             $controllerName = $routeArray[1];
@@ -34,18 +34,24 @@ class Application {
 
             if(method_exists($this->controllerName, $this->methodName)){
                 $controllerInstance = new $this->controllerName();
+
                 return call_user_func_array(
                     [$controllerInstance, $this->methodName],
-                    []
+                    $_GET
                 );
             }
             else {
-                return "Метод не существует";
+                $render = new Render();
+            
+                return $render->renderPage('404.tpl', ['title' => 'Метод не найден'], true);
             }
         }
         else{
-            return "Класс $this->controllerName не существует";
+            $render = new Render();
+
+            return $render->renderPage('404.tpl', ['title' => "Класс $this->controllerName не существует"], true);
         }
+
     }
 
     public function render(array $pageVariables) {
